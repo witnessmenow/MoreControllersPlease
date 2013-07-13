@@ -1,0 +1,60 @@
+More-Controllers-Please
+<table>
+	<tr>
+		<td>
+			<table>
+				<tr>
+					<td></td>
+					<td style="text-align:center;font-size: 50;" colspan="1">
+						<input style="font-size: 30; width:75px;height:75px" id="dpadUp" type="button" value="UP">
+					</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td style="text-align:center;font-size: 50;">
+						<input style="font-size: 30; width:75px;height:75px" id="dpadLeft" type="button" value="LEFT">
+					</td>
+					<td></td>
+					<td style="text-align:center;font-size: 50;">
+						<input style="font-size: 30; width:75px;height:75px" id="dpadRight" type="button" value="RIGHT">
+					</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td style="text-align:center;font-size: 50;" colspan="1">
+						<input style="font-size: 30; width:75px;height:75px" id="dpadDown" type="button" value="DOWN" >
+					</td>
+					<td></td>
+				</tr>
+			</table>
+		</td>
+		<td></td>
+		<td>
+			<table>
+				<tr>
+					<td></td>
+					<td style="text-align:center;font-size: 50;" colspan="1">
+						<input style="font-size: 30; width:75px;height:75px" id="face1" type="button" value="1">
+					</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td style="text-align:center;font-size: 50;">
+						<input style="font-size: 30; width:75px;height:75px" id="face2" type="button" value="2">
+					</td>
+					<td></td>
+					<td style="text-align:center;font-size: 50;">
+						<input style="font-size: 30; width:75px;height:75px" id="face3" type="button" value="3">
+					</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td style="text-align:center;font-size: 50;" colspan="1">
+						<input style="font-size: 30; width:75px;height:75px" id="face4" type="button" value="4" >
+					</td>
+					<td></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
