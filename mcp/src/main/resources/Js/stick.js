@@ -12,6 +12,11 @@ function Stick (maxLength, active) {
 		x: 0,
 		y: 0
 	};
+	
+	this.normal = {
+		x: 0,
+		y: 0
+	};
 };
 
 Stick.prototype.getRadians = function (x, y) {

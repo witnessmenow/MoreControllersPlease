@@ -1,5 +1,7 @@
-function StickHelper(mainCanvas)
+function StickHelper(mainCanvas, id)
 {
+	this.id = id;
+	
 	this.windowWidth = window.innerWidth;
 	this.windowHeight = window.innerHeight;
 
@@ -35,6 +37,10 @@ function StickHelper(mainCanvas)
 		x: this.limitX,
 		y: this.limitY
 	};
+	
+	this.timeSinceLastUpdate = 0;
+	this.lastStickNormalXSent = 0;
+	this.lastStickNormalYSent = 0;
 };
 
 function processFunction(stickHelper)
@@ -147,7 +153,39 @@ StickHelper.prototype.processStick = function() {
 	this.lastTime = now;
 };
 
+function roundStickValue(value)
+{
+	var retVal = value * 100;
+	retVal = Math.round(retVal);
+	retVal = retVal/100;
+	return retVal;
+}
+
+StickHelper.prototype.sendUpdateToServer = function(){
+
+	var xVal = roundStickValue(this.stick.normal.x);
+	var yVal = roundStickValue(this.stick.normal.y);
+
+	sendAnalogStickEvent(this.id, xVal, yVal);
+	this.lastStickNormalXSent = this.stick.normal.x;
+	this.lastStickNormalYSent = this.stick.normal.y;
+	this.timeSinceLastUpdate = 100;
+}
+
 StickHelper.prototype.update = function(elapsed){
 	this.stick.update();
+	
+	if(this.timeSinceLastUpdate <= 0)
+	{
+		if(this.stick.normal.x != this.lastStickNormalXSent || this.stick.normal.y != this.lastStickNormalYSent)
+		{
+			//Send the event
+			this.sendUpdateToServer();
+		}
+	}
+	else
+	{
+		this.timeSinceLastUpdate -= elapsed;
+	}
 };
 

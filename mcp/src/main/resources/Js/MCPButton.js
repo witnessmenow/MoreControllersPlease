@@ -53,6 +53,7 @@ MCPButton.prototype.setButtonDown = function(ident)
 	this.drawButtonToCanvas(this.pressedButtonImage);
 	this.identifier = ident;
 	//Send Event to Server
+	sendButtonEvent(this.buttonImageId, "down");
 }
 
 MCPButton.prototype.setButtonUp = function()
@@ -61,6 +62,7 @@ MCPButton.prototype.setButtonUp = function()
 	this.drawButtonToCanvas(this.buttonImage);
 	
 	//Send Event to Server
+	sendButtonEvent(this.buttonImageId, "up");
 }
 
 MCPButton.prototype.handleTouchStart = function(e)

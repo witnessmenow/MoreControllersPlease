@@ -48,8 +48,9 @@ public class MCP extends NanoHTTPD {
 	
 	public interface MCPListener extends EventListener
 	{
-		void buttonDown(ButtonDownEvent e);
-		void buttonUp(ButtonUpEvent e);
+		void buttonDown(int controllerId, String buttonCode);
+		void buttonUp(int controllerId, String buttonCode);
+		void analogMove(int controllerId, String analog, float x, float y);
 	}
 	
 	
@@ -79,7 +80,7 @@ public class MCP extends NanoHTTPD {
 	
 	public MCP(){
         
-		super(8082);
+		super(0);
 
         listenerList = new ArrayList<MCPListener>();
         webpageBuilder = new WebPageBuilder();
@@ -90,21 +91,29 @@ public class MCP extends NanoHTTPD {
         
     }
     
-    protected void fireButtonDown(ButtonDownEvent e)
+    protected void fireButtonDown(int controllerId, String buttonCode)
     {
     	
     	for (MCPListener l : listenerList) 
     	{
-    		l.buttonDown(e);
+    		l.buttonDown(controllerId, buttonCode);
     	}
     }
     
-    protected void fireButtonUp(ButtonUpEvent e)
+    protected void fireButtonUp(int controllerId, String buttonCode)
     {
     	
     	for (MCPListener l : listenerList) 
     	{
-    		l.buttonUp(e);
+    		l.buttonUp(controllerId, buttonCode);
+    	}
+    }
+    
+    protected void fireAnalogEvent(int controllerId, String analog, float x, float y)
+    {
+    	for (MCPListener l : listenerList) 
+    	{
+    		l.analogMove(controllerId, analog, x, y);
     	}
     }
     
@@ -129,12 +138,23 @@ public class MCP extends NanoHTTPD {
     	
     	if (eventType.contains("down"))
     	{
-    		fireButtonDown(new ButtonDownEvent(this, 1, buttonCode));
+    		fireButtonDown( 1, buttonCode);
     	}
     	else
     	{
-    		fireButtonUp(new ButtonUpEvent(this, 1, buttonCode));
+    		fireButtonUp(1, buttonCode);
     	}
+    }
+    
+    private void handleAnalogEventFromClient(int controllerId, String analogCode, String x, String y)
+    {
+		if(debugLogging)
+			System.out.println("Recieved Analog Event for controller " + controllerId + " - Analog: " + analogCode + ", X: " +  x + ", Y:" + y );
+		
+		float xf = Float.parseFloat(x);
+		float yf = Float.parseFloat(y);
+		
+		fireAnalogEvent(controllerId, analogCode, xf, yf);
     }
       
       
@@ -149,6 +169,12 @@ public class MCP extends NanoHTTPD {
     		
     		return webpageBuilder.generateWebPage("", parms.get("button"));
     		
+    	}
+    	else if(uri.contains("analogEvent"))
+    	{
+    		handleAnalogEventFromClient(1, parms.get("analog"), parms.get("x"), parms.get("y"));
+    		
+    		return webpageBuilder.generateWebPage("", "OK");
     	}
     	else if(uri.contains(".js"))
     	{

@@ -35,3 +35,18 @@ function sendButtonEvent(button, event)
 	xmlhttp.open("GET",url,true);
 	xmlhttp.send();
 }
+
+function sendAnalogStickEvent(analog, x, y)
+{
+	var myRand=parseInt(Math.random()*99999999);
+	var url = document.URL + "/analogEvent" + myRand+ "?analog=" + analog + "&x=" + x + "&y=" + y;
+	
+	var xmlhttp
+	if (window.XMLHttpRequest)
+	{
+		xmlhttp=new XMLHttpRequest();
+	}
+	
+	xmlhttp.open("GET",url,true);
+	xmlhttp.send();
+}

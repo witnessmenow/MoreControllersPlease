@@ -1,7 +1,4 @@
 
-<script type="text/javascript" src="stick.js"></script>
-<script type="text/javascript" src="StickHelper.js"></script>
-<script type="text/javascript" src="MCPButton.js"></script>
 
 <script type="text/javascript">
 	
@@ -29,7 +26,7 @@
 			setButtonImage(buttonArray[i]);
 		}
 		
-		var StickHelperObj = new StickHelper(c);
+		var StickHelperObj = new StickHelper(c, "stick1");
 		StickHelperObj.stickImage.onload = function () {
 						setInterval( function() {processFunction(StickHelperObj);}, 1);
 						};

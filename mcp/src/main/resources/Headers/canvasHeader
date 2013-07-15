@@ -20,3 +20,4 @@
 <script type="text/javascript" src="canvasHelper.js"></script>
 <script type="text/javascript" src="stick.js"></script>
 <script type="text/javascript" src="StickHelper.js"></script>
+<script type="text/javascript" src="MCPButton.js"></script>
