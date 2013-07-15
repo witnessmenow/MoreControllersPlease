@@ -18,7 +18,7 @@ import fi.iki.elonen.ServerRunner;
 
 public class MCP extends NanoHTTPD {
 	
-	private Boolean debugLogging = false;
+	private Boolean debugLogging = true;
 	
 	public class ButtonDownEvent extends EventObject 
 	{
@@ -79,12 +79,10 @@ public class MCP extends NanoHTTPD {
 	
 	public MCP(){
         
-		super(0);
+		super(8082);
 
         listenerList = new ArrayList<MCPListener>();
         webpageBuilder = new WebPageBuilder();
-        
-        System.out.println("Set up server to listen on port:" + super.getListeningPort());
     }
 
     public static void main(String[] args) {
@@ -157,16 +155,30 @@ public class MCP extends NanoHTTPD {
             
             return handleJSRequests(uri);
     	}
+    	else if(uri.contains(".png"))
+    	{
+    		return handlePNGRequest(uri);
+    	}
+    	else if (uri.contains("canvas"))
+    	{
+    		return webpageBuilder.generateWebPage(webpageBuilder.readFile("Headers/canvasHeader"), webpageBuilder.readFile("Bodys/canvasBody"));
+    	}
     	else
     	{
-    		return webpageBuilder.generateWebPage(webpageBuilder.generateHeaderContent(), webpageBuilder.readFile("defaultBody"));
+    		return webpageBuilder.generateWebPage(webpageBuilder.readFile("Headers/defaultHeader"), webpageBuilder.readFile("Bodys/defaultBody"));
     	}
     }
     	
     private Response handleJSRequests(String uriInput)
     {
     	//InputStream is = getClass().getResourceAsStream("/com/ladinc/mcp/files/js/"+ uriInput.substring(1));	
-    	InputStream is = getClass().getResourceAsStream("/" + uriInput.substring(1));
+    	InputStream is = getClass().getResourceAsStream("/Js/" + uriInput.substring(1));
     	return new NanoHTTPD.Response(Status.OK, MIME_JS, is);
+    }
+    
+    private Response handlePNGRequest(String uriInput)
+    {
+    	InputStream is = getClass().getResourceAsStream("/Images/" + uriInput.substring(1));
+    	return new NanoHTTPD.Response(Status.OK, MIME_PNG, is);
     }
 }

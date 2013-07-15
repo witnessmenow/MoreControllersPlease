@@ -1,12 +1,4 @@
-<script type="text/javascript">
 
-function initTouch()
-{
-	addTouchListener("dpadUp");
-	addTouchListener("dpadLeft");
-	addTouchListener("dpadRight");
-	addTouchListener("dpadDown");
-}
 
 function addTouchListener(id)
 {
@@ -43,6 +35,3 @@ function sendButtonEvent(button, event)
 	xmlhttp.open("GET",url,true);
 	xmlhttp.send();
 }
-
-
-</script>

@@ -1,0 +1,78 @@
+
+<script type="text/javascript" src="stick.js"></script>
+<script type="text/javascript" src="StickHelper.js"></script>
+<script type="text/javascript" src="MCPButton.js"></script>
+
+<script type="text/javascript">
+	
+	function initMCP()
+	{
+		var c = document.getElementById("myCanvas");
+	
+		var nw = window.innerWidth;
+		var nh = window.innerHeight;
+		
+		var ctx = c.getContext("2d");
+		ctx.canvas.width = nw;
+		ctx.canvas.height = nh;
+		
+		var buttonArray = new Array();
+		
+		buttonArray[0] = new MCPButton(c, "face4", 'Ouya/OUYA_O.png', nw*(0.8), nh*(0.7), nw*(0.1), nw*(0.1));
+		buttonArray[1] = new MCPButton(c, "face3", 'Ouya/OUYA_A.png', nw*(0.9), nh*(0.5), nw*(0.1), nw*(0.1));
+		buttonArray[2] = new MCPButton(c, "face2", 'Ouya/OUYA_U.png', nw*(0.7), nh*(0.5), nw*(0.1), nw*(0.1));
+		buttonArray[3] = new MCPButton(c, "face1", 'Ouya/OUYA_Y.png', nw*(0.8), nh*(0.3), nw*(0.1), nw*(0.1));
+		
+		for (var i = 0; i < buttonArray.length; ++i)
+		{
+			//Only way I cant find of passing the refence to the object into this function for the onload of image.
+			setButtonImage(buttonArray[i]);
+		}
+		
+		var StickHelperObj = new StickHelper(c);
+		StickHelperObj.stickImage.onload = function () {
+						setInterval( function() {processFunction(StickHelperObj);}, 1);
+						};
+						
+		c.addEventListener("touchstart", 
+							function (e) 
+							{
+								StickHelperObj.handleTouchStart(e);
+								
+								for (var i = 0; i < buttonArray.length; ++i)
+								{
+									buttonArray[i].handleTouchStart(e);
+								}
+								
+							});
+		
+		c.addEventListener("touchmove", 
+							function (e) 
+							{
+								console.log('Handle Move');
+								StickHelperObj.handleTouchMove(e);
+								
+								for (var i = 0; i < buttonArray.length; ++i)
+								{
+									buttonArray[i].handleTouchMove(e);
+								}
+							});
+							
+		c.addEventListener("touchend", 
+							function (e) 
+							{
+								StickHelperObj.handleTouchEnd(e);
+								
+								for (var i = 0; i < buttonArray.length; ++i)
+								{
+									buttonArray[i].handleTouchEnd(e);
+								}
+							});
+	}
+</script>
+
+<div id="outerDiv">
+	<canvas id="myCanvas" style="border:1px solid #d3d3d3;">
+
+	</canvas>
+</div>
