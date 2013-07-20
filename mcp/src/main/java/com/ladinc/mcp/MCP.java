@@ -20,6 +20,8 @@ public class MCP extends NanoHTTPD {
 	
 	private Boolean debugLogging = true;
 	
+	private int uniqueId = 0;
+	
 	public class ButtonDownEvent extends EventObject 
 	{
 		public int controllerId;
@@ -81,15 +83,16 @@ public class MCP extends NanoHTTPD {
 	public MCP(){
         
 		super(0);
-
+		
+		this.debugLogging = true;
         listenerList = new ArrayList<MCPListener>();
         webpageBuilder = new WebPageBuilder();
     }
 
-    public static void main(String[] args) {
-        ServerRunner.run(MCP.class);
-        
-    }
+//    public static void main(String[] args) {
+//        ServerRunner.run(MCP.class);
+//        
+//    }
     
     protected void fireButtonDown(int controllerId, String buttonCode)
     {
@@ -131,22 +134,22 @@ public class MCP extends NanoHTTPD {
      }
 
     
-    private void handleButtonEventFromClient(int controllerId, String buttonCode, String eventType)
+    private void handleButtonEventFromClient(String controllerId, String buttonCode, String eventType)
     {
 		if(debugLogging)
 			System.out.println("Recieved Button Event for controller " + controllerId + " - Button: " + buttonCode + ", Event: " +  eventType  );
     	
     	if (eventType.contains("down"))
     	{
-    		fireButtonDown( 1, buttonCode);
+    		fireButtonDown( Integer.parseInt(controllerId), buttonCode);
     	}
     	else
     	{
-    		fireButtonUp(1, buttonCode);
+    		fireButtonUp( Integer.parseInt(controllerId), buttonCode);
     	}
     }
     
-    private void handleAnalogEventFromClient(int controllerId, String analogCode, String x, String y)
+    private void handleAnalogEventFromClient(String controllerId, String analogCode, String x, String y)
     {
 		if(debugLogging)
 			System.out.println("Recieved Analog Event for controller " + controllerId + " - Analog: " + analogCode + ", X: " +  x + ", Y:" + y );
@@ -154,7 +157,7 @@ public class MCP extends NanoHTTPD {
 		float xf = Float.parseFloat(x);
 		float yf = Float.parseFloat(y);
 		
-		fireAnalogEvent(controllerId, analogCode, xf, yf);
+		fireAnalogEvent(Integer.parseInt(controllerId), analogCode, xf, yf);
     }
       
       
@@ -165,14 +168,14 @@ public class MCP extends NanoHTTPD {
     	
     	if(uri.contains("buttonEvent"))
     	{	
-    		handleButtonEventFromClient(1, parms.get("button"), parms.get("event"));
+    		handleButtonEventFromClient(parms.get("id"), parms.get("button"), parms.get("event"));
     		
     		return webpageBuilder.generateWebPage("", parms.get("button"));
     		
     	}
     	else if(uri.contains("analogEvent"))
     	{
-    		handleAnalogEventFromClient(1, parms.get("analog"), parms.get("x"), parms.get("y"));
+    		handleAnalogEventFromClient(parms.get("id"), parms.get("analog"), parms.get("x"), parms.get("y"));
     		
     		return webpageBuilder.generateWebPage("", "OK");
     	}
@@ -189,9 +192,15 @@ public class MCP extends NanoHTTPD {
     	{
     		return webpageBuilder.generateWebPage(webpageBuilder.readFile("Headers/canvasHeader"), webpageBuilder.readFile("Bodys/canvasBody"));
     	}
+    	else if (uri.contains("favicon"))
+    	{
+    		return webpageBuilder.generateWebPage("", "");
+    	}
     	else
     	{
-    		return webpageBuilder.generateWebPage(webpageBuilder.readFile("Headers/defaultHeader"), webpageBuilder.readFile("Bodys/defaultBody"));
+    		uniqueId ++;
+    		return webpageBuilder.generateWebPage("", webpageBuilder.returnJSRedirect("http://" + this.getAddressForClients() + "/canvas", uniqueId));
+    		//return webpageBuilder.generateWebPage(webpageBuilder.readFile("Headers/defaultHeader"), webpageBuilder.readFile("Bodys/defaultBody"));
     	}
     }
     	

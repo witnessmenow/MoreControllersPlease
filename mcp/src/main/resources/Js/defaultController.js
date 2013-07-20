@@ -21,10 +21,32 @@ function handleTouched(id, type)
 	obj.value = type;	
 }
 
+function getId()
+{
+	var prmstr = window.location.search.substr(1);
+	var prmarr = prmstr.split ("&");
+	var params = {};
+
+	for ( var i = 0; i < prmarr.length; i++) {
+	    var tmparr = prmarr[i].split("=");
+	    params[tmparr[0]] = tmparr[1];
+	}
+	
+	return params.id;
+}
+
+function getUrl()
+{
+	pathArray = window.location.href.split( '/' );
+	protocol = pathArray[0];
+	host = pathArray[2];
+	return protocol + '://' + host;
+}
+
 function sendButtonEvent(button, event)
 {
 	var myRand=parseInt(Math.random()*99999999);
-	var url = document.URL + "/buttonEvent" + myRand+ "?button=" + button + "&event=" + event;
+	var url = getUrl() + "/buttonEvent" + myRand+ "?button=" + button + "&event=" + event + "&id=" + getId();
 	
 	var xmlhttp
 	if (window.XMLHttpRequest)
@@ -39,7 +61,7 @@ function sendButtonEvent(button, event)
 function sendAnalogStickEvent(analog, x, y)
 {
 	var myRand=parseInt(Math.random()*99999999);
-	var url = document.URL + "/analogEvent" + myRand+ "?analog=" + analog + "&x=" + x + "&y=" + y;
+	var url = getUrl() + "/analogEvent" + myRand+ "?analog=" + analog + "&x=" + x + "&y=" + y + "&id=" + getId();
 	
 	var xmlhttp
 	if (window.XMLHttpRequest)

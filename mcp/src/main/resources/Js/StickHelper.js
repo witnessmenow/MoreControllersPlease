@@ -14,7 +14,7 @@ function StickHelper(mainCanvas, id)
 		setInterval( function() {processFunction(this);}, 1);
 	};
 	
-	this.limitSize = this.windowWidth*(0.15);
+	this.limitSize = this.windowWidth*(0.25);
 	this.knobSize = this.limitSize/2;
 	this.inputSize = this.knobSize;
 	this.lastTime = Date.now();
@@ -50,7 +50,7 @@ function processFunction(stickHelper)
 
 StickHelper.prototype.draw = function() 
 {
-	this.context.clearRect(0, 0, this.windowWidth*(0.4), this.windowHeight);
+	this.context.clearRect(0, 0, this.windowWidth*(0.5), this.windowHeight);
 	this.drawStick();
 };
 

@@ -38,5 +38,21 @@ public class WebPageBuilder {
 		filesScanner.close();
 		return fileContents;
 	}
+	
+	public String returnJSRedirect(String redirectUrl, int controllerId)
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append("<script language=\"javascript\">");
+		sb.append("window.location.href = \"" + redirectUrl + "?id=" + controllerId + "\"");
+		sb.append("</script>");
+
+		return sb.toString();
+	}
+	
+	public String returnMetaRedirect(String redirectUrl, int controllerId)
+	{
+		return "";	
+	}
+	
 
 }
