@@ -2,13 +2,10 @@ package com.ladinc.mcp;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.EventListener;
-import java.util.EventObject;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.event.EventListenerList;
-
+import com.ladinc.mcp.interfaces.MCPContorllersListener;
 import com.ladinc.mcp.utils.NetworkUtils;
 import com.ladinc.mcp.webpage.WebPageBuilder;
 
@@ -22,42 +19,6 @@ public class MCP extends NanoHTTPD {
 	
 	private int uniqueId = 0;
 	
-	public class ButtonDownEvent extends EventObject 
-	{
-		public int controllerId;
-		public String buttonCode;
-		
-		public ButtonDownEvent(Object source, int controllerId, String buttonCode) 
-		{
-			super(source);
-			this.controllerId = controllerId;
-			this.buttonCode = buttonCode;
-  		}
-	}
-	
-	public class ButtonUpEvent extends EventObject 
-	{
-		public int controllerId;
-		public String buttonCode;
-		
-		public ButtonUpEvent(Object source, int controllerId, String buttonCode) 
-		{
-			super(source);
-			this.controllerId = controllerId;
-			this.buttonCode = buttonCode;
-  		}
-	}
-	
-	public interface MCPListener extends EventListener
-	{
-		void buttonDown(int controllerId, String buttonCode);
-		void buttonUp(int controllerId, String buttonCode);
-		void analogMove(int controllerId, String analog, float x, float y);
-	}
-	
-	
-	
-	
 	public WebPageBuilder webpageBuilder;
 	
 	public static final String
@@ -69,35 +30,28 @@ public class MCP extends NanoHTTPD {
     MIME_DEFAULT_BINARY = "application/octet-stream",
     MIME_XML = "text/xml";
 	
-	private List<MCPListener> listenerList;
+	private List<MCPContorllersListener> listenerList;
 	
-	public MCP(boolean debugLogging)
+	public MCP(int portNumber)
 	{
-		super(8082);
-        listenerList = new ArrayList<MCPListener>();
+		super(portNumber);
+        listenerList = new ArrayList<MCPContorllersListener>();
         webpageBuilder = new WebPageBuilder();
-        
-        this.debugLogging = debugLogging;
 	}
 	
 	public MCP(){
         
 		super(0);
 		
-		this.debugLogging = true;
-        listenerList = new ArrayList<MCPListener>();
+		//this.debugLogging = true;
+        listenerList = new ArrayList<MCPContorllersListener>();
         webpageBuilder = new WebPageBuilder();
     }
-
-//    public static void main(String[] args) {
-//        ServerRunner.run(MCP.class);
-//        
-//    }
     
     protected void fireButtonDown(int controllerId, String buttonCode)
     {
     	
-    	for (MCPListener l : listenerList) 
+    	for (MCPContorllersListener l : listenerList) 
     	{
     		l.buttonDown(controllerId, buttonCode);
     	}
@@ -106,7 +60,7 @@ public class MCP extends NanoHTTPD {
     protected void fireButtonUp(int controllerId, String buttonCode)
     {
     	
-    	for (MCPListener l : listenerList) 
+    	for (MCPContorllersListener l : listenerList) 
     	{
     		l.buttonUp(controllerId, buttonCode);
     	}
@@ -114,17 +68,17 @@ public class MCP extends NanoHTTPD {
     
     protected void fireAnalogEvent(int controllerId, String analog, float x, float y)
     {
-    	for (MCPListener l : listenerList) 
+    	for (MCPContorllersListener l : listenerList) 
     	{
     		l.analogMove(controllerId, analog, x, y);
     	}
     }
     
-    public void addMCPListener(MCPListener l) {
+    public void addMCPListener(MCPContorllersListener l) {
     	listenerList.add(l);
       }
 
-     public void removeClickListener(MCPListener l) {
+     public void removeClickListener(MCPContorllersListener l) {
     	  listenerList.remove(l);
       }
      
