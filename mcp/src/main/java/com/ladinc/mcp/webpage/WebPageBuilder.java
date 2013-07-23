@@ -7,7 +7,7 @@ import fi.iki.elonen.NanoHTTPD.Response;
 
 public class WebPageBuilder {
 	
-	public Response generateWebPage(String headerContent, String bodyContent)
+	public static Response generateWebPage(String headerContent, String bodyContent)
 	{
 		StringBuilder sb = new StringBuilder();
         sb.append("<html>");
@@ -22,9 +22,9 @@ public class WebPageBuilder {
 	}
 	
 	
-	public String readFile(String fileName) 
+	public static String readFile(String fileName) 
 	{
-		InputStream is = getClass().getResourceAsStream("/" + fileName);
+		InputStream is = WebPageBuilder.class.getResourceAsStream("/" + fileName);
 
 	  
 		Scanner filesScanner = null;
@@ -39,7 +39,7 @@ public class WebPageBuilder {
 		return fileContents;
 	}
 	
-	public String returnJSRedirect(String redirectUrl, int controllerId)
+	public static String returnJSRedirect(String redirectUrl, int controllerId)
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.append("<script language=\"javascript\">");
@@ -49,7 +49,7 @@ public class WebPageBuilder {
 		return sb.toString();
 	}
 	
-	public String returnMetaRedirect(String redirectUrl, int controllerId)
+	public static String returnMetaRedirect(String redirectUrl, int controllerId)
 	{
 		return "";	
 	}

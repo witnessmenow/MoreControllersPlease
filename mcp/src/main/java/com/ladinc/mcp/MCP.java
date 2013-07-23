@@ -1,17 +1,15 @@
 package com.ladinc.mcp;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.ladinc.mcp.interfaces.MCPContorllersListener;
 import com.ladinc.mcp.utils.NetworkUtils;
+import com.ladinc.mcp.utils.ResponseUtils;
 import com.ladinc.mcp.webpage.WebPageBuilder;
 
 import fi.iki.elonen.NanoHTTPD;
-import fi.iki.elonen.NanoHTTPD.Response.Status;
-import fi.iki.elonen.ServerRunner;
 
 public class MCP extends NanoHTTPD {
 	
@@ -19,24 +17,12 @@ public class MCP extends NanoHTTPD {
 	
 	private int uniqueId = 0;
 	
-	public WebPageBuilder webpageBuilder;
-	
-	public static final String
-    MIME_PLAINTEXT = "text/plain",
-    MIME_HTML = "text/html",
-    MIME_JS = "application/javascript",
-    MIME_CSS = "text/css",
-    MIME_PNG = "image/png",
-    MIME_DEFAULT_BINARY = "application/octet-stream",
-    MIME_XML = "text/xml";
-	
 	private List<MCPContorllersListener> listenerList;
 	
 	public MCP(int portNumber)
 	{
 		super(portNumber);
         listenerList = new ArrayList<MCPContorllersListener>();
-        webpageBuilder = new WebPageBuilder();
 	}
 	
 	public MCP(){
@@ -45,7 +31,6 @@ public class MCP extends NanoHTTPD {
 		
 		//this.debugLogging = true;
         listenerList = new ArrayList<MCPContorllersListener>();
-        webpageBuilder = new WebPageBuilder();
     }
     
     protected void fireButtonDown(int controllerId, String buttonCode)
@@ -113,61 +98,97 @@ public class MCP extends NanoHTTPD {
 		
 		fireAnalogEvent(Integer.parseInt(controllerId), analogCode, xf, yf);
     }
-      
+    
+    private Response serveCustom(String uri, Method method, Map<String, String> header, Map<String, String> parms, Map<String, String> files) 
+    {
+    	return WebPageBuilder.generateWebPage("",  WebPageBuilder.readFile("testBody"));
+    }
       
     @Override
-    public Response serve(String uri, Method method, Map<String, String> header, Map<String, String> parms, Map<String, String> files) {
-        
-    	InputStream mbuffer = null;	
+    public Response serve(String uri, Method method, Map<String, String> header, Map<String, String> parms, Map<String, String> files) 
+    {
     	
+    	if(debugLogging)
+			System.out.println("Recieved Request for uri " + uri );
+    	
+    	//If the user is returning a custom webpage
+    	if(uri.contains("custom/"))
+    	{
+    		return serveCustom(uri, method, header, parms, files);
+    	}
+    	
+    	//Handle Events
     	if(uri.contains("buttonEvent"))
     	{	
     		handleButtonEventFromClient(parms.get("id"), parms.get("button"), parms.get("event"));
     		
-    		return webpageBuilder.generateWebPage("", parms.get("button"));
+    		return WebPageBuilder.generateWebPage("", parms.get("button"));
     		
     	}
     	else if(uri.contains("analogEvent"))
     	{
     		handleAnalogEventFromClient(parms.get("id"), parms.get("analog"), parms.get("x"), parms.get("y"));
     		
-    		return webpageBuilder.generateWebPage("", "OK");
+    		return WebPageBuilder.generateWebPage("", "OK");
+    	}
+    	
+    	if(uri.contains("/images/"))
+    	{    		
+    		if(uri.contains(".png"))
+        	{
+        		return ResponseUtils.handlePNGRequest("/jQueryImages/" + uri.substring(1));
+        	}
+    		else if(uri.contains(".gif"))
+    		{
+    			return ResponseUtils.handleGIFRequest("/jQueryImages/" + uri.substring(1));
+    		}
+    		else
+    		{
+    			return WebPageBuilder.generateWebPage("", "?");
+    		}
+    	}
+    	
+    	
+    	//Handle Request for Files
+    	if(uri.contains(".css"))
+    	{
+    		if(debugLogging)
+    			System.out.println("Handling CSS Request " + uri );
+    		return ResponseUtils.handleCSSRequest("/CSS/" + uri.substring(1));
     	}
     	else if(uri.contains(".js"))
     	{
-            
-            return handleJSRequests(uri);
+    		if(debugLogging)
+    			System.out.println("Handling JS Request " + uri );
+            return ResponseUtils.handleJSRequests("/Js/" + uri.substring(1));
     	}
     	else if(uri.contains(".png"))
     	{
-    		return handlePNGRequest(uri);
-    	}
-    	else if (uri.contains("canvas"))
-    	{
-    		return webpageBuilder.generateWebPage(webpageBuilder.readFile("Headers/canvasHeader"), webpageBuilder.readFile("Bodys/canvasBody"));
+    		if(debugLogging)
+    			System.out.println("Handling Image Request " + uri );
+    		return ResponseUtils.handlePNGRequest("/Images/" + uri.substring(1));
     	}
     	else if (uri.contains("favicon"))
     	{
-    		return webpageBuilder.generateWebPage("", "");
+    		return WebPageBuilder.generateWebPage("", "");
+    	}
+    	
+    	
+    	if (uri.contains("canvas"))
+    	{
+    		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("Headers/canvasHeader"), WebPageBuilder.readFile("Bodys/canvasBody"));
+    	}
+    	else if (uri.contains("redirect"))
+    	{
+    		uniqueId ++;
+    		return WebPageBuilder.generateWebPage("", WebPageBuilder.returnJSRedirect("http://" + this.getAddressForClients() + "/canvas", uniqueId));
     	}
     	else
     	{
-    		uniqueId ++;
-    		return webpageBuilder.generateWebPage("", webpageBuilder.returnJSRedirect("http://" + this.getAddressForClients() + "/canvas", uniqueId));
+    		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("Headers/landingPageHeader"), WebPageBuilder.readFile("Bodys/landingPageBody"));
     		//return webpageBuilder.generateWebPage(webpageBuilder.readFile("Headers/defaultHeader"), webpageBuilder.readFile("Bodys/defaultBody"));
     	}
     }
-    	
-    private Response handleJSRequests(String uriInput)
-    {
-    	//InputStream is = getClass().getResourceAsStream("/com/ladinc/mcp/files/js/"+ uriInput.substring(1));	
-    	InputStream is = getClass().getResourceAsStream("/Js/" + uriInput.substring(1));
-    	return new NanoHTTPD.Response(Status.OK, MIME_JS, is);
-    }
     
-    private Response handlePNGRequest(String uriInput)
-    {
-    	InputStream is = getClass().getResourceAsStream("/Images/" + uriInput.substring(1));
-    	return new NanoHTTPD.Response(Status.OK, MIME_PNG, is);
-    }
+    
 }

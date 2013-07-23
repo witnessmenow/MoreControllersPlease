@@ -1,0 +1,23 @@
+<div data-role="page">
+	
+		<div data-role="header">
+			<h1>More Controllers Please</h1>
+		</div><!-- /header -->
+	   
+	   	<div data-role="content" style="text-align:center">	
+		   <br>
+		   <p>A free open source library for adding more controllers.</p>
+		   <p>By @witnessmenow</p>
+		   <a href="http://witnessmenow.github.io/MoreControllersPlease/" target="_blank">Github Project link</a>
+		   <br>
+			<form name="redirect" action="redirect" method="get">
+				<table style="margin-left:auto; margin-right:auto;">
+					<tr>
+						<td>
+							<input id="proceed" type="submit" name="proceed" value="Start!">
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+</div>
