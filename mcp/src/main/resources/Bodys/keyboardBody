@@ -1,0 +1,58 @@
+<script type="text/javascript">
+	
+	function initMCP()
+	{
+		if (document.hasFocus)
+        {
+        	setInterval ("checkForFocus()", 200);
+        }
+	
+		var buttonArray = new Array();
+		
+		<!-- See here for more info on keycodes: http://unixpapa.com/js/key.html -->
+		
+		buttonArray[0] = new KeyboardButton("keyUp", 38);
+		buttonArray[1] = new KeyboardButton("keyDown", 40);
+		buttonArray[2] = new KeyboardButton("keyLeft", 37);
+		buttonArray[3] = new KeyboardButton("keyRight", 39);
+		
+		document.addEventListener("keydown", 
+							function (e) 
+							{
+								
+								for (var i = 0; i < buttonArray.length; ++i)
+								{
+									buttonArray[i].checkForButtonDown(e.keyCode );
+								}
+								
+							});
+		
+		document.addEventListener("keyup", 
+							function (e) 
+							{
+								
+								for (var i = 0; i < buttonArray.length; ++i)
+								{
+									buttonArray[i].checkForButtonUp(e.keyCode );
+								}
+								
+							});
+							
+		
+	}
+</script>
+
+<div data-role="page">
+	
+		<div data-role="header">
+			<h1>Keyboard Controller</h1>
+		</div><!-- /header -->
+	   
+	   	<div data-role="content" style="text-align:center">	
+		   <br>
+		   <p>Use the arrow keys.</p>
+		   <br>
+		   <span id="info"></span>
+
+		</div>
+</div>

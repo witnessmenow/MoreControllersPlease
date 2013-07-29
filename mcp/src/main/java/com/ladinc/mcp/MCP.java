@@ -174,14 +174,27 @@ public class MCP extends NanoHTTPD {
     	}
     	
     	
+    	
     	if (uri.contains("canvas"))
     	{
     		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("Headers/canvasHeader"), WebPageBuilder.readFile("Bodys/canvasBody"));
     	}
+    	else if(uri.contains("keyboard"))
+    	{
+    		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("Headers/keyboardHeader"), WebPageBuilder.readFile("Bodys/keyboardBody"));
+    	}
     	else if (uri.contains("redirect"))
     	{
     		uniqueId ++;
-    		return WebPageBuilder.generateWebPage("", WebPageBuilder.returnJSRedirect("http://" + this.getAddressForClients() + "/canvas", uniqueId));
+    		
+    		if(parms.containsKey("choice"))
+    		{
+    			return WebPageBuilder.generateWebPage("", WebPageBuilder.returnJSRedirect("http://" + this.getAddressForClients() + "/" + parms.get("choice"), uniqueId));
+    		}
+    		else
+    		{
+    			return WebPageBuilder.generateWebPage("", WebPageBuilder.returnJSRedirect("http://" + this.getAddressForClients() + "/canvas", uniqueId));
+    		}
     	}
     	else
     	{

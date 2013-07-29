@@ -1,3 +1,10 @@
+<script type="text/javascript">
+	
+	function initMCP()
+	{
+	}
+</script>
+
 <div data-role="page">
 	
 		<div data-role="header">
@@ -12,6 +19,14 @@
 		   <br>
 			<form name="redirect" action="redirect" method="get">
 				<table style="margin-left:auto; margin-right:auto;">
+					<tr>
+						<td>
+							<select name="choice">
+  								<option value="canvas">Canvas (Touch Screen)</option>
+  								<option value="keyboard">Keyboard (Physical Keyboard)</option>
+							</select>
+						</td>
+					</tr>
 					<tr>
 						<td>
 							<input id="proceed" type="submit" name="proceed" value="Start!">
