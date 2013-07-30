@@ -24,6 +24,7 @@
 							<select name="choice">
   								<option value="canvas">Canvas (Touch Screen)</option>
   								<option value="keyboard">Keyboard (Physical Keyboard)</option>
+  								<option value="tilt">Tilt (Accelerometer)</option>
 							</select>
 						</td>
 					</tr>

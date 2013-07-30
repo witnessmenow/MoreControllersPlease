@@ -19,5 +19,11 @@ public class MyMCPListener implements MCPContorllersListener{
 		System.out.println("Analog Move: Contorller: " + controllerId + " Analog: " + analog + " X: " + x + " Y: " + y );
 	}
 
+	public void orientation(int controllerId, float gamma, float beta,
+			float alpha) {
+		System.out.println("orientation: Contorller: " + controllerId + " gamma: " + gamma + " beta: " + beta + " alpha: " + alpha );
+		
+	}
+
 
 }

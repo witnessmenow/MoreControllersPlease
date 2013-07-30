@@ -1,0 +1,38 @@
+<script type="text/javascript">
+	
+	function initMCP()
+	{
+		if (document.hasFocus)
+        {
+        	setInterval ("checkForFocus()", 200);
+        }
+	
+		var tiltObj = new Tilt(true);
+		
+		window.addEventListener("deviceorientation", 
+							function (e) 
+							{
+								tiltObj.sendInfo(e);
+							});
+		
+
+							
+		
+	}
+</script>
+
+<div data-role="page">
+	
+		<div data-role="header">
+			<h1>Tilt Controller</h1>
+		</div><!-- /header -->
+	   
+	   	<div data-role="content" style="text-align:center">	
+		   <br>
+		   <p>Tilt or Rotate Your Device.</p>
+		   <p>Tip: Touch the screen every now and again to keep your device from sleeping.</p>
+		   <br>
+		   <span id="info"></span>
+
+		</div>
+</div>

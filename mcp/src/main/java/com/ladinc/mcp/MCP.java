@@ -59,6 +59,14 @@ public class MCP extends NanoHTTPD {
     	}
     }
     
+    protected void fireOrientationEvent(int controllerId, float gamma, float beta, float alpha)
+    {
+    	for (MCPContorllersListener l : listenerList) 
+    	{
+    		l.orientation(controllerId, gamma, beta, alpha);
+    	}
+    }
+    
     public void addMCPListener(MCPContorllersListener l) {
     	listenerList.add(l);
       }
@@ -99,6 +107,18 @@ public class MCP extends NanoHTTPD {
 		fireAnalogEvent(Integer.parseInt(controllerId), analogCode, xf, yf);
     }
     
+    private void handleOrientationEventFromClient(String controllerId, String gamma, String beta, String alpha)
+    {
+		if(debugLogging)
+			System.out.println("Recieved Orientation Event for controller " + controllerId + " - gamma: " + gamma + ", beta: " +  beta + ", alpha:" + alpha );
+		
+		float gammaf = Float.parseFloat(gamma);
+		float betaf = Float.parseFloat(beta);
+		float alphaf = Float.parseFloat(alpha);
+		
+		fireOrientationEvent(Integer.parseInt(controllerId), gammaf, betaf, alphaf);
+    }
+    
     private Response serveCustom(String uri, Method method, Map<String, String> header, Map<String, String> parms, Map<String, String> files) 
     {
     	return WebPageBuilder.generateWebPage("",  WebPageBuilder.readFile("testBody"));
@@ -131,6 +151,13 @@ public class MCP extends NanoHTTPD {
     		
     		return WebPageBuilder.generateWebPage("", "OK");
     	}
+    	else if(uri.contains("orientationEvent"))
+    	{
+    		handleOrientationEventFromClient(parms.get("id"), parms.get("gamma"), parms.get("beta"), parms.get("alpha"));
+    		
+    		return WebPageBuilder.generateWebPage("", "OK");
+    	}
+    	
     	
     	if(uri.contains("/images/"))
     	{    		
@@ -182,6 +209,10 @@ public class MCP extends NanoHTTPD {
     	else if(uri.contains("keyboard"))
     	{
     		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("Headers/keyboardHeader"), WebPageBuilder.readFile("Bodys/keyboardBody"));
+    	}
+    	else if(uri.contains("tilt"))
+    	{
+    		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("Headers/tiltHeader"), WebPageBuilder.readFile("Bodys/tiltBody"));
     	}
     	else if (uri.contains("redirect"))
     	{

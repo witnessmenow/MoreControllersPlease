@@ -72,3 +72,18 @@ function sendAnalogStickEvent(analog, x, y)
 	xmlhttp.open("GET",url,true);
 	xmlhttp.send();
 }
+
+function sendOrientationEvent(gamma, beta, alpha)
+{
+	var myRand=parseInt(Math.random()*99999999);
+	var url = getUrl() + "/orientationEvent" + myRand+ "?gamma=" + gamma + "&beta=" + beta + "&alpha=" + alpha + "&id=" + getId();
+	
+	var xmlhttp
+	if (window.XMLHttpRequest)
+	{
+		xmlhttp=new XMLHttpRequest();
+	}
+	
+	xmlhttp.open("GET",url,true);
+	xmlhttp.send();
+}
