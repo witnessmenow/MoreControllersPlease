@@ -1,5 +1,7 @@
 package com.ladinc.mcp.demos;
 
+import java.util.Map;
+
 import com.ladinc.mcp.interfaces.MCPContorllersListener;
 
 public class MyMCPListener implements MCPContorllersListener{
@@ -22,6 +24,12 @@ public class MyMCPListener implements MCPContorllersListener{
 	public void orientation(int controllerId, float gamma, float beta,
 			float alpha) {
 		System.out.println("orientation: Contorller: " + controllerId + " gamma: " + gamma + " beta: " + beta + " alpha: " + alpha );
+		
+	}
+
+	public void pass(Map<String, String> header, Map<String, String> parms,
+			Map<String, String> files) {
+		// TODO Auto-generated method stub
 		
 	}
 

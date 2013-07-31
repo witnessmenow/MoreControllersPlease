@@ -87,6 +87,14 @@ public class MCP extends NanoHTTPD {
     	}
     }
     
+    protected void firePassEvent(Map<String, String> header, Map<String, String> parms, Map<String, String> files)
+    {
+    	for (MCPContorllersListener l : listenerList) 
+    	{
+    		l.pass(header, parms, files);
+    	}
+    }
+    
     public void addMCPListener(MCPContorllersListener l) {
     	listenerList.add(l);
       }
@@ -139,6 +147,14 @@ public class MCP extends NanoHTTPD {
 		fireOrientationEvent(Integer.parseInt(controllerId), gammaf, betaf, alphaf);
     }
     
+    private void handlePassEventFromClient(Map<String, String> header, Map<String, String> parms, Map<String, String> files)
+    {
+    	if(debugLogging)
+			System.out.println("Recieved Pass Event");
+    	
+		firePassEvent(header, parms, files);
+    }
+    
     private Response serveCustom(String uri, Method method, Map<String, String> header, Map<String, String> parms, Map<String, String> files) 
     {
     	//return WebPageBuilder.generateWebPage("",  WebPageBuilder.readFile("testBody"));
@@ -181,6 +197,12 @@ public class MCP extends NanoHTTPD {
     	else if(uri.contains("orientationEvent"))
     	{
     		handleOrientationEventFromClient(parms.get("id"), parms.get("gamma"), parms.get("beta"), parms.get("alpha"));
+    		
+    		return WebPageBuilder.generateWebPage("", "OK");
+    	}
+    	else if(uri.contains("passEvent"))
+    	{
+    		handlePassEventFromClient(header, parms, files);
     		
     		return WebPageBuilder.generateWebPage("", "OK");
     	}
