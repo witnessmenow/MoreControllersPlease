@@ -1,6 +1,7 @@
 package com.ladinc.mcp.demos;
 
 import com.ladinc.mcp.MCP;
+import com.ladinc.mcp.RedirectOption;
 
 public class SimpleMCPDemo {
 
@@ -15,6 +16,9 @@ public class SimpleMCPDemo {
 		System.out.println("Starting Server");
 		
 		mcp.start();
+		
+		//add custom redirect options to the landing page
+		mcp.redirectOptions.add(new RedirectOption("custom/testPage", "Custom Page Demo"));
 		
 		System.out.println("Connect to: " + mcp.getAddressForClients());
 		

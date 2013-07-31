@@ -21,11 +21,7 @@
 				<table style="margin-left:auto; margin-right:auto;">
 					<tr>
 						<td>
-							<select name="choice">
-  								<option value="canvas">Canvas (Touch Screen)</option>
-  								<option value="keyboard">Keyboard (Physical Keyboard)</option>
-  								<option value="tilt">Tilt (Accelerometer)</option>
-							</select>
+							 %s
 						</td>
 					</tr>
 					<tr>

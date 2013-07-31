@@ -23,6 +23,8 @@ public class MCP extends NanoHTTPD {
 	{
 		super(portNumber);
         listenerList = new ArrayList<MCPContorllersListener>();
+        
+        setDefaultRedirects();
 	}
 	
 	public MCP(){
@@ -31,7 +33,25 @@ public class MCP extends NanoHTTPD {
 		
 		//this.debugLogging = true;
         listenerList = new ArrayList<MCPContorllersListener>();
+        
+        setDefaultRedirects();
     }
+	
+	public void setDefaultRedirects()
+	{
+		redirectOptions = new ArrayList<RedirectOption>();
+		
+		redirectOptions.add(new RedirectOption(CANVAS_URL, "Canvas (Touch Screen)"));
+		redirectOptions.add(new RedirectOption(TILT_URL, "Tilt (Accelerometer)"));
+		redirectOptions.add(new RedirectOption(KEYBOARD_URL, "Keyboard (Physical Keyboard)"));
+	}
+	
+	public List<RedirectOption> redirectOptions;
+	
+	public static String CANVAS_URL = "canvas";
+	public static String TILT_URL = "tilt";
+	public static String KEYBOARD_URL = "keyboard";
+	
     
     protected void fireButtonDown(int controllerId, String buttonCode)
     {
@@ -121,7 +141,14 @@ public class MCP extends NanoHTTPD {
     
     private Response serveCustom(String uri, Method method, Map<String, String> header, Map<String, String> parms, Map<String, String> files) 
     {
-    	return WebPageBuilder.generateWebPage("",  WebPageBuilder.readFile("testBody"));
+    	//return WebPageBuilder.generateWebPage("",  WebPageBuilder.readFile("testBody"));
+    	
+    	uri = uri.replace("/custom/", "");
+    	
+    	if(debugLogging)
+			System.out.println("Serving Custom Request for uri " + uri );
+    	
+    	return new Response(WebPageBuilder.readFile(uri));
     }
       
     @Override
@@ -229,7 +256,10 @@ public class MCP extends NanoHTTPD {
     	}
     	else
     	{
-    		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("Headers/landingPageHeader"), WebPageBuilder.readFile("Bodys/landingPageBody"));
+    		String bodyText = WebPageBuilder.readFile("Bodys/landingPageBody");
+    		String redirectOptionText = WebPageBuilder.convertRedirectOptionListToString(redirectOptions);
+    		
+    		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("Headers/landingPageHeader"), String.format(bodyText, redirectOptionText));
     		//return webpageBuilder.generateWebPage(webpageBuilder.readFile("Headers/defaultHeader"), webpageBuilder.readFile("Bodys/defaultBody"));
     	}
     }

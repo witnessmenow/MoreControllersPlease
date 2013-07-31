@@ -1,7 +1,10 @@
 package com.ladinc.mcp.webpage;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Scanner;
+
+import com.ladinc.mcp.RedirectOption;
 
 import fi.iki.elonen.NanoHTTPD.Response;
 
@@ -52,6 +55,27 @@ public class WebPageBuilder {
 	public static String returnMetaRedirect(String redirectUrl, int controllerId)
 	{
 		return "";	
+	}
+	
+	public static String convertRedirectOptionListToString(List<RedirectOption> redirectOptions)
+	{
+		if(redirectOptions == null || redirectOptions.size() == 0)
+		{
+			return "";
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("<select name=\"choice\">");
+		
+		for (RedirectOption r : redirectOptions)
+		{
+			sb.append("<option value=\"" + r.url + "\">" + r.displayText + "</option>");
+		}
+		
+		sb.append("</select>");
+		
+		return sb.toString();
 	}
 	
 
