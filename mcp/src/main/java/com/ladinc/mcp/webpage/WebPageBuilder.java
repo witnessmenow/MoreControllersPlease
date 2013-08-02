@@ -61,7 +61,7 @@ public class WebPageBuilder {
 	{
 		if(redirectOptions == null || redirectOptions.size() == 0)
 		{
-			return "";
+			return "";	
 		}
 		
 		StringBuilder sb = new StringBuilder();

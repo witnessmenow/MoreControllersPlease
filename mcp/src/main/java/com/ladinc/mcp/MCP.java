@@ -164,7 +164,22 @@ public class MCP extends NanoHTTPD {
     	if(debugLogging)
 			System.out.println("Serving Custom Request for uri " + uri );
     	
-    	return new Response(WebPageBuilder.readFile(uri));
+    	try
+    	{
+    		String webpageCode = WebPageBuilder.readFile(uri);
+    		return new Response(webpageCode);
+    	}
+    	catch (Exception e)
+    	{
+    		//unable to load custom
+    	}
+    	
+    	//If we are here we were unable to load the custom page, check is it a default page (we have already removed the custom)
+    	Response resp = serve("/" + uri, method, header, parms, files);
+    	if(debugLogging)
+			System.out.println("Loading a default resp " + resp.toString() );
+    	
+    	return resp;
     }
       
     @Override
