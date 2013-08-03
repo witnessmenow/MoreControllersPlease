@@ -11,14 +11,12 @@ public class SimpleMCPDemo {
 	 */
 	public static void main(String[] args) throws Exception 
 	{
-		MCP mcp = new MCP(8888);
-		
-		System.out.println("Starting Server");
-		
-		mcp.start();
+		MCP mcp = MCP.tryCreateAndStartMCPWithPort(8888);
 		
 		//add custom redirect options to the landing page
-		mcp.redirectOptions.add(new RedirectOption("custom/testPage", "Custom Page Demo"));
+		mcp.redirectOptions.add(new RedirectOption("testPage", "Custom Page Demo"));
+		
+		mcp.customLinks.add("testPage");
 		
 		System.out.println("Connect to: " + mcp.getAddressForClients());
 		

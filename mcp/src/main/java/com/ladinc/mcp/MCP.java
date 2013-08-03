@@ -1,5 +1,7 @@
 package com.ladinc.mcp;
 
+import java.io.IOException;
+import java.net.BindException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,12 +21,55 @@ public class MCP extends NanoHTTPD {
 	
 	private List<MCPContorllersListener> listenerList;
 	
+	public List<String> customLinks;
+	
+	
+	//Tries to create a mcp instacnce with given port, if it fails it deafults to a random port
+	public static MCP tryCreateAndStartMCPWithPort(int portNumber)
+	{
+		
+		System.out.println("Trying to create server using port  " +  portNumber);
+		MCP mcp = new MCP(portNumber);
+		
+		try {
+			System.out.println("Trying to start server");
+			mcp.start();
+		} 
+		catch (Exception e) {
+			
+			System.out.println("Caught Exception");
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if(mcp.getListeningPort() <= 0)
+		{	
+			//port was in use, using a random one
+			System.out.println("Port must have been unavailable  ");
+			System.out.println("Trying to create server random port  ");
+			mcp = new MCP(0);
+			
+			try {
+				System.out.println("Trying to start server");
+				mcp.start();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		return mcp;
+		
+	}
+	
 	public MCP(int portNumber)
 	{
 		super(portNumber);
         listenerList = new ArrayList<MCPContorllersListener>();
         
         setDefaultRedirects();
+        
+        customLinks = new ArrayList<String>();
 	}
 	
 	public MCP(){
@@ -35,6 +80,8 @@ public class MCP extends NanoHTTPD {
         listenerList = new ArrayList<MCPContorllersListener>();
         
         setDefaultRedirects();
+        
+        customLinks = new ArrayList<String>();
     }
 	
 	public void setDefaultRedirects()
@@ -159,27 +206,19 @@ public class MCP extends NanoHTTPD {
     {
     	//return WebPageBuilder.generateWebPage("",  WebPageBuilder.readFile("testBody"));
     	
-    	uri = uri.replace("/custom/", "");
-    	
     	if(debugLogging)
 			System.out.println("Serving Custom Request for uri " + uri );
     	
     	try
     	{
-    		String webpageCode = WebPageBuilder.readFile(uri);
-    		return new Response(webpageCode);
+    		return new Response(WebPageBuilder.readFile(uri));
     	}
     	catch (Exception e)
     	{
     		//unable to load custom
     	}
     	
-    	//If we are here we were unable to load the custom page, check is it a default page (we have already removed the custom)
-    	Response resp = serve("/" + uri, method, header, parms, files);
-    	if(debugLogging)
-			System.out.println("Loading a default resp " + resp.toString() );
-    	
-    	return resp;
+    	return WebPageBuilder.generateWebPage("", "");
     }
       
     @Override
@@ -189,10 +228,14 @@ public class MCP extends NanoHTTPD {
     	if(debugLogging)
 			System.out.println("Recieved Request for uri " + uri );
     	
+    	
     	//If the user is returning a custom webpage
-    	if(uri.contains("custom/"))
+    	for(String str : customLinks)
     	{
-    		return serveCustom(uri, method, header, parms, files);
+    		if(uri.contains(str))
+    		{
+    			return serveCustom(uri, method, header, parms, files);
+    		}
     	}
     	
     	//Handle Events
@@ -268,15 +311,15 @@ public class MCP extends NanoHTTPD {
     	
     	if (uri.contains("canvas"))
     	{
-    		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("Headers/canvasHeader"), WebPageBuilder.readFile("Bodys/canvasBody"));
+    		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("/Headers/canvasHeader"), WebPageBuilder.readFile("/Bodys/canvasBody"));
     	}
     	else if(uri.contains("keyboard"))
     	{
-    		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("Headers/keyboardHeader"), WebPageBuilder.readFile("Bodys/keyboardBody"));
+    		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("/Headers/keyboardHeader"), WebPageBuilder.readFile("/Bodys/keyboardBody"));
     	}
     	else if(uri.contains("tilt"))
     	{
-    		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("Headers/tiltHeader"), WebPageBuilder.readFile("Bodys/tiltBody"));
+    		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("/Headers/tiltHeader"), WebPageBuilder.readFile("/Bodys/tiltBody"));
     	}
     	else if (uri.contains("redirect"))
     	{
@@ -293,10 +336,10 @@ public class MCP extends NanoHTTPD {
     	}
     	else
     	{
-    		String bodyText = WebPageBuilder.readFile("Bodys/landingPageBody");
+    		String bodyText = WebPageBuilder.readFile("/Bodys/landingPageBody");
     		String redirectOptionText = WebPageBuilder.convertRedirectOptionListToString(redirectOptions);
     		
-    		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("Headers/landingPageHeader"), String.format(bodyText, redirectOptionText));
+    		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("/Headers/landingPageHeader"), String.format(bodyText, redirectOptionText));
     		//return webpageBuilder.generateWebPage(webpageBuilder.readFile("Headers/defaultHeader"), webpageBuilder.readFile("Bodys/defaultBody"));
     	}
     }

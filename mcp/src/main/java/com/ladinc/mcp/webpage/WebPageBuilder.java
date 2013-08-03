@@ -27,7 +27,7 @@ public class WebPageBuilder {
 	
 	public static String readFile(String fileName) 
 	{
-		InputStream is = WebPageBuilder.class.getResourceAsStream("/" + fileName);
+		InputStream is = WebPageBuilder.class.getResourceAsStream( fileName);
 
 	  
 		Scanner filesScanner = null;
