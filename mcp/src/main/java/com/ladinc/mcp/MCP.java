@@ -3,8 +3,11 @@ package com.ladinc.mcp;
 import java.io.IOException;
 import java.net.BindException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.json.simple.JSONObject;
 
 import com.ladinc.mcp.interfaces.MCPContorllersListener;
 import com.ladinc.mcp.utils.NetworkUtils;
@@ -22,6 +25,8 @@ public class MCP extends NanoHTTPD {
 	private List<MCPContorllersListener> listenerList;
 	
 	public List<String> customLinks;
+	
+	public Map<String, JSONObject> hearbeatResponses;
 	
 	
 	//Tries to create a mcp instacnce with given port, if it fails it deafults to a random port
@@ -65,24 +70,26 @@ public class MCP extends NanoHTTPD {
 	public MCP(int portNumber)
 	{
 		super(portNumber);
-        listenerList = new ArrayList<MCPContorllersListener>();
-        
-        setDefaultRedirects();
-        
-        customLinks = new ArrayList<String>();
+		setDefaults();
+
 	}
 	
 	public MCP(){
         
 		super(0);
-		
-		//this.debugLogging = true;
+		setDefaults();
+    }
+	
+	private void setDefaults()
+	{
         listenerList = new ArrayList<MCPContorllersListener>();
         
         setDefaultRedirects();
         
         customLinks = new ArrayList<String>();
-    }
+        
+        hearbeatResponses = new HashMap<String, JSONObject>();
+	}
 	
 	public void setDefaultRedirects()
 	{
@@ -235,6 +242,23 @@ public class MCP extends NanoHTTPD {
     		if(uri.contains(str))
     		{
     			return serveCustom(uri, method, header, parms, files);
+    		}
+    	}
+    	
+    	if(uri.contains("heartbeat"))
+    	{
+    		String id = parms.get("id");
+    		
+    		if(this.hearbeatResponses.containsKey(id))
+    		{
+    			String jsonResp = this.hearbeatResponses.get(id).toJSONString();
+    			//To ensure no repeats of the same message
+    			this.hearbeatResponses.remove(id);
+    			return new Response(jsonResp);
+    		}
+    		else
+    		{
+    			return new Response((new JSONObject()).toJSONString());
     		}
     	}
     	
