@@ -1,5 +1,10 @@
-function StickHelper(mainCanvas, id)
+function StickHelper(mainCanvas, id, handleD, img)
 {
+	handleD = handleD || true;
+	img = img || "Analog_stick_guide_by_Eric_the_Rexman.png";
+
+	this.handleDraw = handleD;
+	
 	this.id = id;
 	
 	this.windowWidth = window.innerWidth;
@@ -9,7 +14,7 @@ function StickHelper(mainCanvas, id)
 	this.context = this.canvas.getContext("2d");
 
 	this.stickImage = new Image();
-	this.stickImage.src = "Analog_stick_guide_by_Eric_the_Rexman.png";
+	this.stickImage.src = img;
 	this.stickImage.onload = function () {
 		setInterval( function() {processFunction(this);}, 1);
 	};
@@ -148,7 +153,10 @@ StickHelper.prototype.processStick = function() {
 	var elapsed = (now - this.lastTime);
 
 	this.update(elapsed);
-	this.draw();
+	if(this.handleDraw)
+	{
+		this.draw();
+	}
 
 	this.lastTime = now;
 };
