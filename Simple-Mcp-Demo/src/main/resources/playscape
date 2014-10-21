@@ -1,0 +1,74 @@
+<html>
+	<head>
+		<title>Playscape</title>
+
+		<script type="text/javascript" src="defaultController.js"></script>
+		<script type="text/javascript" src="PageHelper.js"></script>
+		<script type="text/javascript" src="canvasHelper.js"></script>
+		<script type="text/javascript" src="stick.js"></script>
+		<script type="text/javascript" src="StickHelper.js"></script>
+		<script type="text/javascript" src="shake.js"></script>
+	</head>
+
+	<body onload="initController()">
+		<script type="text/javascript">
+
+			function initController()
+			{
+				
+				var c = document.getElementById("myCanvas");
+	
+				var nw = window.innerWidth;
+				var nh = window.innerHeight;
+		
+				var ctx = c.getContext("2d");
+				ctx.canvas.width = nw;
+				ctx.canvas.height = nh;
+				
+				var StickHelperObj = new StickHelper(c, "stick1");
+				
+				StickHelperObj.stickImage.onload = function () {
+								setInterval( function() {processFunction(StickHelperObj);}, 1);
+								};
+								
+				c.addEventListener("touchstart", 
+									function (e) 
+									{
+										StickHelperObj.handleTouchStart(e);
+										
+									});
+				
+				c.addEventListener("touchmove", 
+									function (e) 
+									{
+										console.log('Handle Move');
+										StickHelperObj.handleTouchMove(e);
+										
+									});
+									
+				c.addEventListener("touchend", 
+									function (e) 
+									{
+										StickHelperObj.handleTouchEnd(e);
+										
+									});
+									
+				window.addEventListener('shake', shakeEventDidOccur, false);
+
+
+			}
+			
+			function shakeEventDidOccur () 
+			{
+				sendButtonEvent("shake", "once");
+			}
+
+		</script>
+
+		<div id="outerDiv">
+			<canvas id="myCanvas" style="border:1px solid #d3d3d3;">
+
+			</canvas>
+		</div>
+	</body>
+</html>

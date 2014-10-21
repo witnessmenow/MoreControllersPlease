@@ -15,8 +15,11 @@ public class SimpleMCPDemo {
 		
 		//add custom redirect options to the landing page
 		mcp.redirectOptions.add(new RedirectOption("testPage", "Custom Page Demo"));
+		mcp.redirectOptions.add(new RedirectOption("playscape", "Playscape"));
 		
 		mcp.customLinks.add("testPage");
+		mcp.customLinks.add("target.png");
+		mcp.customLinks.add("playscape");
 		
 		System.out.println("Connect to: " + mcp.getAddressForClients());
 		

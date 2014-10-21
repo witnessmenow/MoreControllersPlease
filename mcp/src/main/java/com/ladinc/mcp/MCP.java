@@ -218,6 +218,15 @@ public class MCP extends NanoHTTPD {
     	
     	try
     	{
+    		if(uri.contains(".png"))
+        	{
+        		return ResponseUtils.handlePNGRequest(uri);
+        	}
+    		else if(uri.contains(".gif"))
+    		{
+    			return ResponseUtils.handleGIFRequest(uri);
+    		}
+    		
     		return new Response(WebPageBuilder.readFile(uri));
     	}
     	catch (Exception e)
@@ -344,6 +353,10 @@ public class MCP extends NanoHTTPD {
     	else if(uri.contains("tilt"))
     	{
     		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("/Headers/tiltHeader"), WebPageBuilder.readFile("/Bodys/tiltBody"));
+    	}
+    	else if(uri.contains("postman"))
+    	{
+    		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("/Headers/postmanHeader"), WebPageBuilder.readFile("/Bodys/postmanBody"));
     	}
     	else if (uri.contains("redirect"))
     	{
