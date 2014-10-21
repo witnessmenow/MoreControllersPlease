@@ -18,8 +18,6 @@ import fi.iki.elonen.NanoHTTPD;
 
 public class MCP extends NanoHTTPD {
 	
-	private Boolean debugLogging = true;
-	
 	private int uniqueId = 0;
 	
 	private List<MCPContorllersListener> listenerList;
@@ -27,6 +25,8 @@ public class MCP extends NanoHTTPD {
 	public List<String> customLinks;
 	
 	public Map<String, JSONObject> hearbeatResponses;
+	
+	public static boolean SHOW_DEBUG_LOGGING = false;
 	
 	
 	//Tries to create a mcp instacnce with given port, if it fails it deafults to a random port
@@ -37,7 +37,10 @@ public class MCP extends NanoHTTPD {
 		MCP mcp = new MCP(portNumber);
 		
 		try {
-			System.out.println("Trying to start server");
+			if(SHOW_DEBUG_LOGGING)
+			{
+				System.out.println("Trying to start server");
+			}
 			mcp.start();
 		} 
 		catch (Exception e) {
@@ -50,12 +53,18 @@ public class MCP extends NanoHTTPD {
 		if(mcp.getListeningPort() <= 0)
 		{	
 			//port was in use, using a random one
-			System.out.println("Port must have been unavailable  ");
-			System.out.println("Trying to create server random port  ");
+			if(SHOW_DEBUG_LOGGING)
+			{
+				System.out.println("Port must have been unavailable  ");
+				System.out.println("Trying to create server random port  ");
+			}
 			mcp = new MCP(0);
 			
 			try {
-				System.out.println("Trying to start server");
+				if(SHOW_DEBUG_LOGGING)
+				{
+					System.out.println("Trying to start server");
+				}
 				mcp.start();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -165,7 +174,7 @@ public class MCP extends NanoHTTPD {
     
     private void handleButtonEventFromClient(String controllerId, String buttonCode, String eventType)
     {
-		if(debugLogging)
+		if(SHOW_DEBUG_LOGGING)
 			System.out.println("Recieved Button Event for controller " + controllerId + " - Button: " + buttonCode + ", Event: " +  eventType  );
     	
     	if (eventType.contains("down"))
@@ -180,7 +189,7 @@ public class MCP extends NanoHTTPD {
     
     private void handleAnalogEventFromClient(String controllerId, String analogCode, String x, String y)
     {
-		if(debugLogging)
+		if(SHOW_DEBUG_LOGGING)
 			System.out.println("Recieved Analog Event for controller " + controllerId + " - Analog: " + analogCode + ", X: " +  x + ", Y:" + y );
 		
 		float xf = Float.parseFloat(x);
@@ -191,7 +200,7 @@ public class MCP extends NanoHTTPD {
     
     private void handleOrientationEventFromClient(String controllerId, String gamma, String beta, String alpha)
     {
-		if(debugLogging)
+		if(SHOW_DEBUG_LOGGING)
 			System.out.println("Recieved Orientation Event for controller " + controllerId + " - gamma: " + gamma + ", beta: " +  beta + ", alpha:" + alpha );
 		
 		float gammaf = Float.parseFloat(gamma);
@@ -203,7 +212,7 @@ public class MCP extends NanoHTTPD {
     
     private void handlePassEventFromClient(Map<String, String> header, Map<String, String> parms, Map<String, String> files)
     {
-    	if(debugLogging)
+    	if(SHOW_DEBUG_LOGGING)
 			System.out.println("Recieved Pass Event");
     	
 		firePassEvent(header, parms, files);
@@ -213,7 +222,7 @@ public class MCP extends NanoHTTPD {
     {
     	//return WebPageBuilder.generateWebPage("",  WebPageBuilder.readFile("testBody"));
     	
-    	if(debugLogging)
+    	if(SHOW_DEBUG_LOGGING)
 			System.out.println("Serving Custom Request for uri " + uri );
     	
     	try
@@ -241,7 +250,7 @@ public class MCP extends NanoHTTPD {
     public Response serve(String uri, Method method, Map<String, String> header, Map<String, String> parms, Map<String, String> files) 
     {
     	
-    	if(debugLogging)
+    	if(SHOW_DEBUG_LOGGING)
 			System.out.println("Recieved Request for uri " + uri );
     	
     	
@@ -319,19 +328,19 @@ public class MCP extends NanoHTTPD {
     	//Handle Request for Files
     	if(uri.contains(".css"))
     	{
-    		if(debugLogging)
+    		if(SHOW_DEBUG_LOGGING)
     			System.out.println("Handling CSS Request " + uri );
     		return ResponseUtils.handleCSSRequest("/CSS/" + uri.substring(1));
     	}
     	else if(uri.contains(".js"))
     	{
-    		if(debugLogging)
+    		if(SHOW_DEBUG_LOGGING)
     			System.out.println("Handling JS Request " + uri );
             return ResponseUtils.handleJSRequests("/Js/" + uri.substring(1));
     	}
     	else if(uri.contains(".png"))
     	{
-    		if(debugLogging)
+    		if(SHOW_DEBUG_LOGGING)
     			System.out.println("Handling Image Request " + uri );
     		return ResponseUtils.handlePNGRequest("/Images/" + uri.substring(1));
     	}
