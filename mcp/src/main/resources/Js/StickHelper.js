@@ -59,11 +59,15 @@ StickHelper.prototype.draw = function()
 	this.drawStick();
 };
 
-StickHelper.prototype.drawStick = function() 
+StickHelper.prototype.drawStick = function(trans) 
 {
 	this.context.save();
 
+	trans = trans || 1;
+	
 	var knobSz = this.knobSize;
+	
+	this.context.globalAlpha = trans;
 	
 	// Limit
 	this.context.drawImage(
