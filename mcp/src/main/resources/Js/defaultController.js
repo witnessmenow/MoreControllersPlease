@@ -21,6 +21,8 @@ function handleTouched(id, type)
 	obj.value = type;	
 }
 
+var savedId = null;
+
 function getId()
 {
 	var prmstr = window.location.search.substr(1);
@@ -32,7 +34,33 @@ function getId()
 	    params[tmparr[0]] = tmparr[1];
 	}
 	
-	return params.id;
+	if(params.id != null)
+	{
+		return params.id;
+	}
+	else
+	{
+		if(savedId == null)
+		{
+			var xmlhttp
+			if (window.XMLHttpRequest)
+			{
+				xmlhttp=new XMLHttpRequest();
+			}
+			
+			xmlhttp.open("GET","getIpAddress",false);
+			xmlhttp.send();
+			
+			var obj = JSON.parse(xmlhttp.responseText);
+			var IP = obj.ip;
+			
+			var tmparr2 = IP.split(".");
+			
+			savedId = tmparr2[3];
+		}
+		
+		return savedId;
+	}
 }
 
 function getUrl()

@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Scanner;
 
+import com.ladinc.mcp.MCP;
 import com.ladinc.mcp.RedirectOption;
 
 import fi.iki.elonen.NanoHTTPD.Response;
@@ -46,7 +47,15 @@ public class WebPageBuilder {
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.append("<script language=\"javascript\">");
-		sb.append("window.location.href = \"" + redirectUrl + "?id=" + controllerId + "\"");
+		
+		if(MCP.USE_IP_ADDRESS_AS_ID)
+		{
+			sb.append("window.location.href = \"" + redirectUrl + "\"");
+		}
+		else
+		{
+			sb.append("window.location.href = \"" + redirectUrl + "?id=" + controllerId + "\"");
+		}
 		sb.append("</script>");
 
 		return sb.toString();

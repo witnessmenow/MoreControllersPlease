@@ -28,6 +28,8 @@ public class MCP extends NanoHTTPD {
 	
 	public static boolean SHOW_DEBUG_LOGGING = false;
 	
+	public static boolean USE_IP_ADDRESS_AS_ID = false;
+	
 	
 	//Tries to create a mcp instacnce with given port, if it fails it deafults to a random port
 	public static MCP tryCreateAndStartMCPWithPort(int portNumber)
@@ -307,6 +309,14 @@ public class MCP extends NanoHTTPD {
     		return WebPageBuilder.generateWebPage("", "OK");
     	}
     	
+    	if(uri.contains("getIpAddress"))
+    	{
+    		String clientIP = header.get("remote-addr");
+    		JSONObject json = new JSONObject();
+    		json.put("ip", clientIP);
+    		
+    		return new Response(json.toJSONString());
+    	}
     	
     	if(uri.contains("/images/"))
     	{    		

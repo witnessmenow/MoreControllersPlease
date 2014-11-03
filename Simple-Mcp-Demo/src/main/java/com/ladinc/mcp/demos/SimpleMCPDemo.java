@@ -13,6 +13,8 @@ public class SimpleMCPDemo {
 	{
 		MCP mcp = MCP.tryCreateAndStartMCPWithPort(8888);
 		
+		MCP.USE_IP_ADDRESS_AS_ID = false;
+		
 		//add custom redirect options to the landing page
 		mcp.redirectOptions.add(new RedirectOption("testPage", "Custom Page Demo"));
 		mcp.redirectOptions.add(new RedirectOption("playscape", "Playscape"));
