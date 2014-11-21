@@ -1,7 +1,10 @@
 package com.ladinc.mcp.utils;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import com.ladinc.mcp.MCP;
 import com.ladinc.mcp.webpage.WebPageBuilder;
 
 import fi.iki.elonen.NanoHTTPD;
@@ -27,9 +30,18 @@ public class ResponseUtils
     	return new NanoHTTPD.Response(Status.OK, MIME_JS, is);
     }
     
-    public static Response handlePNGRequest(String uriInput)
+    public static Response handlePNGRequest(String uriInput, InputStream stream)
     {
-    	InputStream is = ResponseUtils.class.getResourceAsStream(uriInput);
+    	InputStream is = null;
+    	
+    	if(stream == null)
+		{
+			is = ResponseUtils.class.getResourceAsStream(uriInput);
+		}
+		else
+		{
+			is = stream;
+		}
     	return new NanoHTTPD.Response(Status.OK, MIME_PNG, is);
     }
     
@@ -39,11 +51,22 @@ public class ResponseUtils
     	return new NanoHTTPD.Response(Status.OK, MIME_CSS, is);
     }
     
-    public static Response handleGIFRequest(String uriInput)
+    public static Response handleGIFRequest(String uriInput,  InputStream stream)
     {
-    	System.out.println("gif: " + uriInput);
+    	if(MCP.SHOW_DEBUG_LOGGING)
+    		System.out.println("gif: " + uriInput);
     	
-    	InputStream is = ResponseUtils.class.getResourceAsStream(uriInput);
+    	InputStream is = null;
+    	
+    	if(stream == null)
+		{
+			is = ResponseUtils.class.getResourceAsStream(uriInput);
+		}
+		else
+		{
+			is = stream;
+		}
+    	
     	return new NanoHTTPD.Response(Status.OK, MIME_GIF, is);
     }
     

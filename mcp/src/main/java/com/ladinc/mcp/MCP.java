@@ -1,6 +1,7 @@
 package com.ladinc.mcp;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.BindException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,11 +25,15 @@ public class MCP extends NanoHTTPD {
 	
 	public List<String> customLinks;
 	
+	public List<CustomResource> customLinkDirect;
+	
 	public Map<String, JSONObject> hearbeatResponses;
 	
 	public static boolean SHOW_DEBUG_LOGGING = false;
 	
 	public static boolean USE_IP_ADDRESS_AS_ID = false;
+	
+	public static String FILE_LOCATION_PREFIX = "";
 	
 	
 	//Tries to create a mcp instacnce with given port, if it fails it deafults to a random port
@@ -220,7 +225,7 @@ public class MCP extends NanoHTTPD {
 		firePassEvent(header, parms, files);
     }
     
-    private Response serveCustom(String uri, Method method, Map<String, String> header, Map<String, String> parms, Map<String, String> files) 
+    private Response serveCustom(String uri, Method method, Map<String, String> header, Map<String, String> parms, Map<String, String> files, InputStream stream) 
     {
     	//return WebPageBuilder.generateWebPage("",  WebPageBuilder.readFile("testBody"));
     	
@@ -231,14 +236,14 @@ public class MCP extends NanoHTTPD {
     	{
     		if(uri.contains(".png"))
         	{
-        		return ResponseUtils.handlePNGRequest(uri);
+        		return ResponseUtils.handlePNGRequest(uri, stream);
         	}
     		else if(uri.contains(".gif"))
     		{
-    			return ResponseUtils.handleGIFRequest(uri);
+    			return ResponseUtils.handleGIFRequest(uri, stream);
     		}
     		
-    		return new Response(WebPageBuilder.readFile(uri));
+    		return new Response(WebPageBuilder.readFile(uri, stream));
     	}
     	catch (Exception e)
     	{
@@ -261,7 +266,18 @@ public class MCP extends NanoHTTPD {
     	{
     		if(uri.contains(str))
     		{
-    			return serveCustom(uri, method, header, parms, files);
+    			return serveCustom(MCP.FILE_LOCATION_PREFIX + uri, method, header, parms, files, null);
+    		}
+    	}
+    	
+    	if(this.customLinkDirect != null)
+    	{
+    		for(CustomResource cr: this.customLinkDirect)
+    		{
+    			if(uri.contains(cr.fileName))
+    			{
+    				return serveCustom(uri, method, header, parms, files, cr.stream);
+    			}
     		}
     	}
     	
@@ -322,11 +338,11 @@ public class MCP extends NanoHTTPD {
     	{    		
     		if(uri.contains(".png"))
         	{
-        		return ResponseUtils.handlePNGRequest("/jQueryImages/" + uri.substring(1));
+        		return ResponseUtils.handlePNGRequest("/jQueryImages/" + uri.substring(1), null);
         	}
     		else if(uri.contains(".gif"))
     		{
-    			return ResponseUtils.handleGIFRequest("/jQueryImages/" + uri.substring(1));
+    			return ResponseUtils.handleGIFRequest("/jQueryImages/" + uri.substring(1), null);
     		}
     		else
     		{
@@ -352,7 +368,7 @@ public class MCP extends NanoHTTPD {
     	{
     		if(SHOW_DEBUG_LOGGING)
     			System.out.println("Handling Image Request " + uri );
-    		return ResponseUtils.handlePNGRequest("/Images/" + uri.substring(1));
+    		return ResponseUtils.handlePNGRequest("/Images/" + uri.substring(1), null);
     	}
     	else if (uri.contains("favicon"))
     	{
@@ -363,19 +379,19 @@ public class MCP extends NanoHTTPD {
     	
     	if (uri.contains("canvas"))
     	{
-    		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("/Headers/canvasHeader"), WebPageBuilder.readFile("/Bodys/canvasBody"));
+    		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("/Headers/canvasHeader", null), WebPageBuilder.readFile("/Bodys/canvasBody", null));
     	}
     	else if(uri.contains("keyboard"))
     	{
-    		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("/Headers/keyboardHeader"), WebPageBuilder.readFile("/Bodys/keyboardBody"));
+    		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("/Headers/keyboardHeader", null), WebPageBuilder.readFile("/Bodys/keyboardBody", null));
     	}
     	else if(uri.contains("tilt"))
     	{
-    		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("/Headers/tiltHeader"), WebPageBuilder.readFile("/Bodys/tiltBody"));
+    		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("/Headers/tiltHeader", null), WebPageBuilder.readFile("/Bodys/tiltBody", null));
     	}
     	else if(uri.contains("postman"))
     	{
-    		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("/Headers/postmanHeader"), WebPageBuilder.readFile("/Bodys/postmanBody"));
+    		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("/Headers/postmanHeader", null), WebPageBuilder.readFile("/Bodys/postmanBody", null));
     	}
     	else if (uri.contains("redirect"))
     	{
@@ -392,10 +408,10 @@ public class MCP extends NanoHTTPD {
     	}
     	else
     	{
-    		String bodyText = WebPageBuilder.readFile("/Bodys/landingPageBody");
+    		String bodyText = WebPageBuilder.readFile("/Bodys/landingPageBody", null);
     		String redirectOptionText = WebPageBuilder.convertRedirectOptionListToString(redirectOptions);
     		
-    		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("/Headers/landingPageHeader"), String.format(bodyText, redirectOptionText));
+    		return WebPageBuilder.generateWebPage(WebPageBuilder.readFile("/Headers/landingPageHeader", null), String.format(bodyText, redirectOptionText));
     		//return webpageBuilder.generateWebPage(webpageBuilder.readFile("Headers/defaultHeader"), webpageBuilder.readFile("Bodys/defaultBody"));
     	}
     }
