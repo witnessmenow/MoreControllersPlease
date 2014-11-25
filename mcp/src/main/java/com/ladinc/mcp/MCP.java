@@ -1,5 +1,6 @@
 package com.ladinc.mcp;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.BindException;
@@ -225,7 +226,7 @@ public class MCP extends NanoHTTPD {
 		firePassEvent(header, parms, files);
     }
     
-    private Response serveCustom(String uri, Method method, Map<String, String> header, Map<String, String> parms, Map<String, String> files, InputStream stream) 
+    private Response serveCustom(String uri, Method method, Map<String, String> header, Map<String, String> parms, Map<String, String> files, String fileContents) 
     {
     	//return WebPageBuilder.generateWebPage("",  WebPageBuilder.readFile("testBody"));
     	
@@ -236,14 +237,14 @@ public class MCP extends NanoHTTPD {
     	{
     		if(uri.contains(".png"))
         	{
-        		return ResponseUtils.handlePNGRequest(uri, stream);
+        		return ResponseUtils.handlePNGRequest(uri, fileContents);
         	}
     		else if(uri.contains(".gif"))
     		{
-    			return ResponseUtils.handleGIFRequest(uri, stream);
+    			return ResponseUtils.handleGIFRequest(uri, fileContents);
     		}
     		
-    		return new Response(WebPageBuilder.readFile(uri, stream));
+    		return new Response(WebPageBuilder.readFile(uri, fileContents));
     	}
     	catch (Exception e)
     	{
@@ -276,7 +277,7 @@ public class MCP extends NanoHTTPD {
     		{
     			if(uri.contains(cr.fileName))
     			{
-    				return serveCustom(uri, method, header, parms, files, cr.stream);
+    				return serveCustom(uri, method, header, parms, files, cr.fileContents);
     			}
     		}
     	}

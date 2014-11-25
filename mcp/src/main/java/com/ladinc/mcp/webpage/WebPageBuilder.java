@@ -1,5 +1,6 @@
 package com.ladinc.mcp.webpage;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -28,17 +29,23 @@ public class WebPageBuilder {
 	}
 	
 	
-	public static String readFile(String fileName, InputStream stream) 
+	public static String readFile(String fileName, String fileContent) 
 	{
 		InputStream is = null;
 		
-		if(stream == null)
+		if(fileContent == null)
 		{
 			is = WebPageBuilder.class.getResourceAsStream(fileName);
 		}
 		else
 		{
-			is = stream;
+			return fileContent;
+//			try {
+//				is = new FileInputStream(file);
+//			} catch (FileNotFoundException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 		}
 
 	  

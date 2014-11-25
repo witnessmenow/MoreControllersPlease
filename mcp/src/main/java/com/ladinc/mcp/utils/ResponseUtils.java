@@ -1,5 +1,6 @@
 package com.ladinc.mcp.utils;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -30,17 +31,23 @@ public class ResponseUtils
     	return new NanoHTTPD.Response(Status.OK, MIME_JS, is);
     }
     
-    public static Response handlePNGRequest(String uriInput, InputStream stream)
+    public static Response handlePNGRequest(String uriInput, String fileContents)
     {
     	InputStream is = null;
     	
-    	if(stream == null)
+    	if(fileContents == null)
 		{
 			is = ResponseUtils.class.getResourceAsStream(uriInput);
 		}
 		else
 		{
-			is = stream;
+			return new NanoHTTPD.Response(Status.OK, MIME_PNG, fileContents);
+//			try {
+//				is = new FileInputStream(file);
+//			} catch (FileNotFoundException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 		}
     	return new NanoHTTPD.Response(Status.OK, MIME_PNG, is);
     }
@@ -51,20 +58,26 @@ public class ResponseUtils
     	return new NanoHTTPD.Response(Status.OK, MIME_CSS, is);
     }
     
-    public static Response handleGIFRequest(String uriInput,  InputStream stream)
+    public static Response handleGIFRequest(String uriInput, String fileContents)
     {
     	if(MCP.SHOW_DEBUG_LOGGING)
     		System.out.println("gif: " + uriInput);
     	
     	InputStream is = null;
     	
-    	if(stream == null)
+    	if(fileContents == null)
 		{
 			is = ResponseUtils.class.getResourceAsStream(uriInput);
 		}
-		else
+    	else
 		{
-			is = stream;
+    		return new NanoHTTPD.Response(Status.OK, MIME_GIF, fileContents);
+//			try {
+//				is = new FileInputStream(file);
+//			} catch (FileNotFoundException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 		}
     	
     	return new NanoHTTPD.Response(Status.OK, MIME_GIF, is);

@@ -1,15 +1,13 @@
 package com.ladinc.mcp;
 
-import java.io.InputStream;
-
 public class CustomResource 
 {
-	public CustomResource(String fileName, InputStream stream)
+	public CustomResource(String fileName, String fileContents)
 	{
 		this.fileName = fileName;
-		this.stream = stream;
+		this.fileContents = fileContents;
 	}
 	
 	public String fileName;
-	public InputStream stream;
+	public String fileContents;
 }
