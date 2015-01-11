@@ -13,6 +13,10 @@ public class SimpleMCPDemo {
 	{
 		MCP mcp = MCP.tryCreateAndStartMCPWithPort(8888);
 		
+		mcp.baseMCPRocksURL = "http://checkargos.com/mcp";
+		
+		mcp.registerWithMCPRocks("SimpleDemo");
+		
 		MCP.USE_IP_ADDRESS_AS_ID = false;
 		
 		//add custom redirect options to the landing page

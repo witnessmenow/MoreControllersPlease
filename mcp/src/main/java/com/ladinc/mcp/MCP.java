@@ -4,12 +4,19 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.BindException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.ladinc.mcp.interfaces.MCPContorllersListener;
 import com.ladinc.mcp.utils.NetworkUtils;
@@ -35,6 +42,14 @@ public class MCP extends NanoHTTPD {
 	public static boolean USE_IP_ADDRESS_AS_ID = false;
 	
 	public static String FILE_LOCATION_PREFIX = "";
+	
+	public String baseMCPRocksURL = "http://mcp.rocks/";
+	
+	public String mcpRocksDataLabel = null;
+	
+	public boolean mcpRocksVerified = false;
+	
+	public Timer timer;
 	
 	
 	//Tries to create a mcp instacnce with given port, if it fails it deafults to a random port
@@ -96,6 +111,92 @@ public class MCP extends NanoHTTPD {
 		super(0);
 		setDefaults();
     }
+	
+	public void registerWithMCPRocks(String gameName) throws ParseException, IOException
+	{
+		URL request = new URL(baseMCPRocksURL + "/register.php?internalIp=" + getAddressForClients() + "&game=" + gameName);
+		Scanner scanner = new Scanner(request.openStream());
+		String response = scanner.useDelimiter("\\Z").next();
+		JSONObject json = (JSONObject)new JSONParser().parse(response);
+		mcpRocksDataLabel = (String) json.get("name");
+		scanner.close();
+		
+		mcpRocksVerified = verifyMCPRocks(gameName);
+		
+		if(mcpRocksVerified)
+		{
+			setMCPRocksHeartbeat();
+			registerRemoveGameFromMCPRocksOnExit();
+		}
+	}
+	
+	
+	
+	private void setMCPRocksHeartbeat() throws MalformedURLException
+	{
+		if(this.timer != null)
+		{
+			timer.cancel();
+			timer.purge();
+		}
+		
+		this.timer = new Timer();
+		keepAliveUrl =  new URL(baseMCPRocksURL + "/keepAlive.php?key=" + mcpRocksDataLabel);
+		timer.scheduleAtFixedRate(new TimerTask() {
+			  @Override
+			  public void run() 
+			  {
+				  sendKeepAliveToMCPRocks();
+			  }
+			}, 60000, 60000);
+	}
+	
+	public URL keepAliveUrl;
+	public void sendKeepAliveToMCPRocks()
+	{
+		Scanner scanner;
+		try
+		{
+			scanner = new Scanner(keepAliveUrl.openStream());
+			String response = scanner.useDelimiter("\\Z").next();
+		} 
+		catch (IOException e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	
+	private boolean verifyMCPRocks(String gameName) throws IOException
+	{
+		URL request = new URL(baseMCPRocksURL + "/verify.php?internalIp=" + getAddressForClients() + "&game=" + gameName);
+		Scanner scanner = new Scanner(request.openStream());
+		String response = scanner.useDelimiter("\\Z").next();
+		return (response == "true");
+	}
+	
+	public void registerRemoveGameFromMCPRocksOnExit()
+	{
+
+		  Runtime.getRuntime().addShutdownHook(new Thread() 
+		  {
+			  @Override
+			  public void run() 
+			  {
+				  URL request;
+				  try 
+				  {
+					  request = new URL(baseMCPRocksURL + "/remove.php?key=" + mcpRocksDataLabel);
+					  Scanner scanner = new Scanner(request.openStream());
+					  String response = scanner.useDelimiter("\\Z").next();
+				  } catch (IOException e) 
+				  {
+					  e.printStackTrace();
+				  }
+			  }
+		  });
+	}
 	
 	private void setDefaults()
 	{
@@ -175,6 +276,14 @@ public class MCP extends NanoHTTPD {
       }
      
      public String getAddressForClients()
+     {
+    	 if(!mcpRocksVerified)
+    		 return getIpAddressForClients();
+    	 else
+    		 return baseMCPRocksURL + "/client.php";
+     }
+     
+     public String getIpAddressForClients()
      {
     	 return NetworkUtils.getIPAddress(true) + ":" + this.getListeningPort();
      }
