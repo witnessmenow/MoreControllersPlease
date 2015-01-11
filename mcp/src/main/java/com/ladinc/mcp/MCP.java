@@ -173,7 +173,7 @@ public class MCP extends NanoHTTPD {
 		URL request = new URL(baseMCPRocksURL + "/verify.php?internalIp=" + getAddressForClients() + "&game=" + gameName);
 		Scanner scanner = new Scanner(request.openStream());
 		String response = scanner.useDelimiter("\\Z").next();
-		return (response == "true");
+		return (response.contains("true"));
 	}
 	
 	public void registerRemoveGameFromMCPRocksOnExit()
@@ -184,18 +184,24 @@ public class MCP extends NanoHTTPD {
 			  @Override
 			  public void run() 
 			  {
-				  URL request;
-				  try 
-				  {
-					  request = new URL(baseMCPRocksURL + "/remove.php?key=" + mcpRocksDataLabel);
-					  Scanner scanner = new Scanner(request.openStream());
-					  String response = scanner.useDelimiter("\\Z").next();
-				  } catch (IOException e) 
-				  {
-					  e.printStackTrace();
-				  }
+				  removeFromMCPRocks();
 			  }
 		  });
+	}
+	
+	public void removeFromMCPRocks()
+	{
+		try 
+		{
+			URL request;
+			request = new URL(baseMCPRocksURL + "/remove.php?key=" + mcpRocksDataLabel);
+			Scanner scanner = new Scanner(request.openStream());
+			String response = scanner.useDelimiter("\\Z").next();
+		 }
+		catch (IOException e) 
+		{
+		  e.printStackTrace();
+		}
 	}
 	
 	private void setDefaults()
@@ -280,7 +286,7 @@ public class MCP extends NanoHTTPD {
     	 if(!mcpRocksVerified)
     		 return getIpAddressForClients();
     	 else
-    		 return baseMCPRocksURL + "/client.php";
+    		 return baseMCPRocksURL.replace("http://", "");
      }
      
      public String getIpAddressForClients()
