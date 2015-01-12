@@ -114,7 +114,7 @@ public class MCP extends NanoHTTPD {
 	
 	public void registerWithMCPRocks(String gameName) throws ParseException, IOException
 	{
-		URL request = new URL(baseMCPRocksURL + "/register.php?internalIp=" + getAddressForClients() + "&game=" + gameName);
+		URL request = new URL(baseMCPRocksURL + "/register.php?internalIp=" + getIpAddressForClients() + "&game=" + gameName);
 		Scanner scanner = new Scanner(request.openStream());
 		String response = scanner.useDelimiter("\\Z").next();
 		JSONObject json = (JSONObject)new JSONParser().parse(response);
@@ -170,7 +170,7 @@ public class MCP extends NanoHTTPD {
 	
 	private boolean verifyMCPRocks(String gameName) throws IOException
 	{
-		URL request = new URL(baseMCPRocksURL + "/verify.php?internalIp=" + getAddressForClients() + "&game=" + gameName);
+		URL request = new URL(baseMCPRocksURL + "/verify.php?internalIp=" + getIpAddressForClients() + "&game=" + gameName);
 		Scanner scanner = new Scanner(request.openStream());
 		String response = scanner.useDelimiter("\\Z").next();
 		return (response.contains("true"));
@@ -515,11 +515,11 @@ public class MCP extends NanoHTTPD {
     		
     		if(parms.containsKey("choice"))
     		{
-    			return WebPageBuilder.generateWebPage("", WebPageBuilder.returnJSRedirect("http://" + this.getAddressForClients() + "/" + parms.get("choice"), uniqueId));
+    			return WebPageBuilder.generateWebPage("", WebPageBuilder.returnJSRedirect("http://" + this.getIpAddressForClients() + "/" + parms.get("choice"), uniqueId));
     		}
     		else
     		{
-    			return WebPageBuilder.generateWebPage("", WebPageBuilder.returnJSRedirect("http://" + this.getAddressForClients() + "/canvas", uniqueId));
+    			return WebPageBuilder.generateWebPage("", WebPageBuilder.returnJSRedirect("http://" + this.getIpAddressForClients() + "/canvas", uniqueId));
     		}
     	}
     	else
