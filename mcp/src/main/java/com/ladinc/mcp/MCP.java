@@ -3,9 +3,11 @@ package com.ladinc.mcp;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.BindException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,11 +45,13 @@ public class MCP extends NanoHTTPD {
 	
 	public static String FILE_LOCATION_PREFIX = "";
 	
-	public String baseMCPRocksURL = "http://mcp.rocks/";
+	public String baseMCPRocksURL = "http://mcp.rocks";
 	
 	public String mcpRocksDataLabel = null;
 	
 	public boolean mcpRocksVerified = false;
+	
+	public String defaultStartPage = null;
 	
 	public Timer timer;
 	
@@ -114,7 +118,7 @@ public class MCP extends NanoHTTPD {
 	
 	public void registerWithMCPRocks(String gameName) throws ParseException, IOException
 	{
-		URL request = new URL(baseMCPRocksURL + "/register.php?internalIp=" + getIpAddressForClients() + "&game=" + gameName);
+		URL request = new URL(baseMCPRocksURL + "/register.php?internalIp=" + getIpAddressForClients() + "&game=" + getGameName(gameName));
 		Scanner scanner = new Scanner(request.openStream());
 		String response = scanner.useDelimiter("\\Z").next();
 		JSONObject json = (JSONObject)new JSONParser().parse(response);
@@ -168,9 +172,15 @@ public class MCP extends NanoHTTPD {
 
 	}
 	
+	private String getGameName(String gameName) throws UnsupportedEncodingException
+	{
+		return URLEncoder.encode(gameName, "UTF-8").replace("+", "%20"); 
+	}
+	
+	
 	private boolean verifyMCPRocks(String gameName) throws IOException
 	{
-		URL request = new URL(baseMCPRocksURL + "/verify.php?internalIp=" + getIpAddressForClients() + "&game=" + gameName);
+		URL request = new URL(baseMCPRocksURL + "/verify.php?internalIp=" + getIpAddressForClients() + "&game=" + getGameName(gameName));
 		Scanner scanner = new Scanner(request.openStream());
 		String response = scanner.useDelimiter("\\Z").next();
 		return (response.contains("true"));
@@ -524,6 +534,29 @@ public class MCP extends NanoHTTPD {
     	}
     	else
     	{
+    		if(defaultStartPage != null && (customLinks != null || customLinkDirect != null))
+    		{
+    			if(customLinks != null)
+    			{
+    				if(customLinks.contains(defaultStartPage))
+    				{
+    					return serveCustom(MCP.FILE_LOCATION_PREFIX + "/" + defaultStartPage, method, header, parms, files, null);
+    				}
+    			}
+    			
+    			if(customLinkDirect != null)
+    			{
+    				for(CustomResource cr: this.customLinkDirect)
+    	    		{
+    	    			if(defaultStartPage == cr.fileName)
+    	    			{
+    	    				return serveCustom(uri, method, header, parms, files, cr.fileContents);
+    	    			}
+    	    		}
+    			}
+    			
+    		}
+    		
     		String bodyText = WebPageBuilder.readFile("/Bodys/landingPageBody", null);
     		String redirectOptionText = WebPageBuilder.convertRedirectOptionListToString(redirectOptions);
     		
